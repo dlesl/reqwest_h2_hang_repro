@@ -14,6 +14,7 @@ const TIMEOUT: Option<u64> = None;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
     let stop = Arc::new(AtomicBool::new(false));
     let stop_ = stop.clone();
     ctrlc::set_handler(move || stop_.store(true, Ordering::Relaxed)).unwrap();
@@ -32,8 +33,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .collect();
     let mut count = 0;
     for (n, join_handle) in workers {
-        println!("worker {} stopped!", n);
         count += join_handle.await.unwrap();
+        println!("worker {} stopped!", n);
     }
     let elapsed = start.elapsed().as_secs();
     println!(
